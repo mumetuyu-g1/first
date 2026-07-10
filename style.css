@@ -336,14 +336,19 @@ h1 {
 }
 
 .filter-group select {
-  background: transparent;
-  border: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: #15102a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 0.8rem center;
+  background-size: 1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
   color: #fff;
   font-family: var(--font-family);
   font-weight: 500;
   outline: none;
   cursor: pointer;
-  padding: 0.4rem 0.5rem;
+  padding: 0.4rem 2rem 0.4rem 0.5rem;
 }
 
 .filter-group select option {
@@ -731,7 +736,6 @@ label {
 
 input[type="text"],
 textarea,
-select,
 input[type="date"] {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--glass-border);
@@ -744,16 +748,44 @@ input[type="date"] {
   transition: all 0.3s ease;
 }
 
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: #15102a url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>") no-repeat right 1rem center;
+  background-size: 1.2rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 0.7rem 2.5rem 0.7rem 0.9rem;
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  color-scheme: dark;
+}
+
 input[type="text"]:focus,
 textarea:focus,
-select:focus,
 input[type="date"]:focus {
   border-color: var(--primary);
   background: rgba(255, 255, 255, 0.08);
 }
 
+select:focus {
+  border-color: var(--primary);
+  background-color: #15102a;
+  box-shadow: 0 0 10px var(--primary-glow);
+}
+
 textarea {
   resize: vertical;
+}
+
+select option {
+  background-color: #15102a;
+  color: #ffffff;
 }
 
 .modal-actions {
