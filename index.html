@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glassmorphism Kanban Board</title>
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- CSS Link -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <!-- Ambient background glowing orbs -->
+  <div class="orbs-container">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-main">
+        <div class="logo-area">
+          <div class="logo-icon">
+            <i data-lucide="trello"></i>
+          </div>
+          <div>
+            <h1>Glassflow Board</h1>
+            <p class="subtitle">タスクを美しく、スマートに管理する</p>
+          </div>
+        </div>
+        <div class="header-meta">
+          <div class="date-badge">
+            <i data-lucide="calendar"></i>
+            <span id="current-date">2026年7月10日</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Panel -->
+      <div class="stats-panel">
+        <div class="stat-card">
+          <span class="stat-label">すべてのタスク</span>
+          <span class="stat-value" id="stat-total">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">進行中</span>
+          <span class="stat-value" id="stat-progress">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">完了</span>
+          <span class="stat-value" id="stat-done">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">達成率</span>
+          <span class="stat-value" id="stat-rate">0%</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Toolbar / Controls -->
+    <section class="toolbar-section">
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" id="search-input" placeholder="タスクを検索...">
+      </div>
+      <div class="toolbar-actions">
+        <div class="filter-group">
+          <label for="priority-filter"><i data-lucide="sliders-horizontal"></i> 優先度:</label>
+          <select id="priority-filter">
+            <option value="all">すべて</option>
+            <option value="high">高 (High)</option>
+            <option value="medium">中 (Medium)</option>
+            <option value="low">低 (Low)</option>
+          </select>
+        </div>
+        <button id="btn-new-task" class="btn btn-primary">
+          <i data-lucide="plus"></i>
+          新規タスク
+        </button>
+      </div>
+    </section>
+
+    <!-- Kanban Board -->
+    <main class="board-container">
+      <!-- ToDo Column -->
+      <div class="board-column" data-status="todo" id="col-todo">
+        <div class="column-header">
+          <div class="column-title-wrapper">
+            <span class="column-dot dot-todo"></span>
+            <h2>未着手</h2>
+            <span class="task-count" id="count-todo">0</span>
+          </div>
+        </div>
+        <div class="column-body" id="body-todo" ondragover="allowDrop(event)" ondrop="drop(event)">
+          <!-- Dynamic Task Cards Go Here -->
+        </div>
+      </div>
+
+      <!-- In Progress Column -->
+      <div class="board-column" data-status="progress" id="col-progress">
+        <div class="column-header">
+          <div class="column-title-wrapper">
+            <span class="column-dot dot-progress"></span>
+            <h2>進行中</h2>
+            <span class="task-count" id="count-progress">0</span>
+          </div>
+        </div>
+        <div class="column-body" id="body-progress" ondragover="allowDrop(event)" ondrop="drop(event)">
+          <!-- Dynamic Task Cards Go Here -->
+        </div>
+      </div>
+
+      <!-- Done Column -->
+      <div class="board-column" data-status="done" id="col-done">
+        <div class="column-header">
+          <div class="column-title-wrapper">
+            <span class="column-dot dot-done"></span>
+            <h2>完了</h2>
+            <span class="task-count" id="count-done">0</span>
+          </div>
+        </div>
+        <div class="column-body" id="body-done" ondragover="allowDrop(event)" ondrop="drop(event)">
+          <!-- Dynamic Task Cards Go Here -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Task Modal (Add/Edit) -->
+  <div class="modal-overlay" id="task-modal">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3 id="modal-title">新規タスクの追加</h3>
+        <button class="btn-close" id="modal-close"><i data-lucide="x"></i></button>
+      </div>
+      <form id="task-form">
+        <input type="hidden" id="task-id">
+        <div class="form-group">
+          <label for="task-title-input">タイトル <span class="required">*</span></label>
+          <input type="text" id="task-title-input" required placeholder="タスクのタイトルを入力してください">
+        </div>
+        <div class="form-group">
+          <label for="task-desc-input">詳細説明</label>
+          <textarea id="task-desc-input" rows="3" placeholder="タスクの詳細を入力してください"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="task-priority-input">優先度</label>
+            <select id="task-priority-input">
+              <option value="low">低 (Low)</option>
+              <option value="medium" selected>中 (Medium)</option>
+              <option value="high">高 (High)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="task-date-input">期限</label>
+            <input type="date" id="task-date-input">
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel">キャンセル</button>
+          <button type="submit" class="btn btn-primary" id="btn-save">保存する</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Link -->
+  <script src="app.js"></script>
+</body>
+</html>
