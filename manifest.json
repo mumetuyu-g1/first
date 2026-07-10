@@ -1,0 +1,24 @@
+{
+  "name": "Glassflow Board",
+  "short_name": "Glassflow",
+  "description": "Glassmorphismスタイルの美しい高機能カンバン・タスク管理ボード",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f0c20",
+  "theme_color": "#15102a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
