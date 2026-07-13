@@ -51,19 +51,33 @@ const inputPriority = document.getElementById("task-priority-input");
 const inputDate = document.getElementById("task-date-input");
 
 // --- Initialization ---
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // Set current date in header
   const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' };
   currentDateSpan.textContent = new Date().toLocaleDateString('ja-JP', options);
 
-  // Load from local storage or use samples
-  const savedTasks = localStorage.getItem("glassflow_tasks");
-  if (savedTasks) {
-    tasks = JSON.parse(savedTasks);
-  } else {
-    tasks = [...SAMPLE_TASKS];
-    saveToLocalStorage();
-  }
+  // Load tasks from Firestore or use samples
+  const fetchTasks = async () => {
+    try {
+      const snapshot = await db.collection("tasks").get();
+      if (!snapshot.empty) {
+        tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      } else {
+        tasks = [...SAMPLE_TASKS];
+        // Initialize Firestore with sample tasks
+        const batch = db.batch();
+        SAMPLE_TASKS.forEach(task => {
+          const docRef = db.collection("tasks").doc(task.id);
+          batch.set(docRef, task);
+        });
+        await batch.commit();
+      }
+    } catch (err) {
+      console.error("Error loading tasks:", err);
+      tasks = [...SAMPLE_TASKS];
+    }
+  };
+  await fetchTasks();
 
   // Render lists
   renderBoard();
@@ -71,10 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons(); // Initialize icons
 });
 
-// --- LocalStorage ---
-function saveToLocalStorage() {
-  localStorage.setItem("glassflow_tasks", JSON.stringify(tasks));
-}
+// --- Firestore replaces localStorage; no localStorage function needed ---
 
 // --- Render Board ---
 function renderBoard() {
@@ -207,7 +218,9 @@ function updateTaskStatus(id, newStatus) {
   const taskIndex = tasks.findIndex(t => t.id === id);
   if (taskIndex !== -1 && tasks[taskIndex].status !== newStatus) {
     tasks[taskIndex].status = newStatus;
-    saveToLocalStorage();
+    // Update status in Firestore
+    db.collection("tasks").doc(id).update({ status: newStatus })
+      .catch(err => console.error("Error updating status:", err));
     renderBoard();
   }
 }
@@ -300,9 +313,16 @@ taskForm.addEventListener("submit", (e) => {
     tasks.push(newTask);
   }
 
-  saveToLocalStorage();
-  renderBoard();
-  closeModal();
+    // Sync changes to Firestore
+    if (id) {
+      db.collection("tasks").doc(id).set(tasks[index])
+        .catch(err => console.error("Error updating task:", err));
+    } else {
+      db.collection("tasks").add(newTask)
+        .catch(err => console.error("Error adding task:", err));
+    }
+    renderBoard();
+    closeModal();
 });
 
 // Search & Filter Events
@@ -313,7 +333,8 @@ priorityFilter.addEventListener("change", renderBoard);
 window.deleteTask = function(id) {
   if (confirm("このタスクを削除してもよろしいですか？")) {
     tasks = tasks.filter(t => t.id !== id);
-    saveToLocalStorage();
+    db.collection("tasks").doc(id).delete()
+      .catch(err => console.error("Error deleting task:", err));
     renderBoard();
   }
 };
