@@ -794,3 +794,155 @@ select option {
   gap: 0.8rem;
   margin-top: 1.8rem;
 }
+
+/* ========================================================
+   AUTH AREA
+   ======================================================== */
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.auth-area {
+  display: flex;
+  align-items: center;
+}
+
+.auth-signed-out,
+.auth-signed-in {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.85);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Google Sign-in Button */
+.btn-google {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  backdrop-filter: blur(6px);
+}
+.btn-google:hover {
+  background: rgba(255,255,255,0.22);
+  box-shadow: 0 4px 14px rgba(66,133,244,0.3);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+/* ========================================================
+   CARD BADGES & META
+   ======================================================== */
+
+/* Card badges row (priority + category) */
+.card-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+/* Category badges */
+.category-badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.cat-work    { background: rgba(59,130,246,0.25); color: #93c5fd; border: 1px solid rgba(59,130,246,0.4); }
+.cat-private { background: rgba(236,72,153,0.2);  color: #f9a8d4; border: 1px solid rgba(236,72,153,0.35); }
+.cat-study   { background: rgba(34,197,94,0.2);   color: #86efac; border: 1px solid rgba(34,197,94,0.35); }
+.cat-other   { background: rgba(168,85,247,0.2);  color: #d8b4fe; border: 1px solid rgba(168,85,247,0.35); }
+
+/* Tags row */
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0.5rem 0 0.25rem;
+}
+
+.tag-chip {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 400;
+}
+
+/* Assignee label in card footer */
+.assignee-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.55);
+}
+.assignee-label svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Card footer flex */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+/* ========================================================
+   FORM LABEL HINT
+   ======================================================== */
+.label-hint {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.45);
+  margin-left: 0.3rem;
+}
+
