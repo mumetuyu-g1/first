@@ -100,30 +100,37 @@ function signOut() {
   auth.signOut().catch(err => console.error('[Auth] Sign-out error:', err));
 }
 
-// Listen to auth state changes
+// 監視用リスナーを整理
 auth.onAuthStateChanged(async user => {
   if (user) {
+    // 確実にuidをセットしてからロードに入る
     currentUid = user.uid;
-    // Update UI
+    
+    // UIをログイン状態へ
     authSignedOut.style.display = 'none';
     authSignedIn.style.display  = 'flex';
     userAvatar.src = user.photoURL || '';
     userAvatar.style.display = user.photoURL ? 'block' : 'none';
     userNameSpan.textContent = user.displayName || user.email || '';
 
-    await loadTasksFromFirestore();
-    renderBoard();
+    // Firestoreからデータを引っ張ってくる
+    await loadTasksFromFirestore(user.uid);
   } else {
     currentUid = null;
+    
+    // UIを未ログイン状態へ
     authSignedOut.style.display = 'flex';
     authSignedIn.style.display  = 'none';
     userAvatar.src = '';
     userNameSpan.textContent = '';
 
-    // Load demo tasks from shared collection
-    await loadTasksFromFirestore();
-    renderBoard();
+    // 未ログイン時はFirestoreを叩かず、純粋にローカル（メモリ）でサンプルを動かす
+    // ※これでFirestoreのセキュリティエラーを防ぐ
+    tasks = [...SAMPLE_TASKS];
   }
+  
+  // ロード完了後にレンダーを走らせる
+  renderBoard();
   lucide.createIcons();
 });
 
@@ -133,26 +140,36 @@ btnSignout.addEventListener('click', signOut);
 // ============================================================
 // FIRESTORE
 // ============================================================
-async function loadTasksFromFirestore() {
+// 引数として明示的にuidを受け取る設計に変更
+async function loadTasksFromFirestore(uid) {
+  if (!uid) {
+    tasks = [...SAMPLE_TASKS];
+    return;
+  }
+
   try {
-    const snapshot = await tasksCollection().get();
+    const colRef = db.collection('users').doc(uid).collection('tasks');
+    const snapshot = await colRef.get();
+    
     if (!snapshot.empty) {
       tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } else {
+      // ユーザーの初回ログイン時：サンプルデータを個人用コレクションに保存する
       tasks = [...SAMPLE_TASKS];
       const batch = db.batch();
       SAMPLE_TASKS.forEach(task => {
-        const docRef = tasksCollection().doc(task.id);
+        const docRef = colRef.doc(task.id);
         batch.set(docRef, task);
       });
       await batch.commit();
+      console.log('[Firestore] Initial sample tasks written for user:', uid);
     }
   } catch (err) {
     console.error('[Firestore] Error loading tasks:', err);
+    // エラーが起きた場合は安全のためにサンプルデータを表示
     tasks = [...SAMPLE_TASKS];
   }
 }
-
 // ============================================================
 // INITIALIZATION
 // ============================================================
